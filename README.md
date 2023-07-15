@@ -1,21 +1,9 @@
-# BroadwayTickets
+# Broadway-Tickets
 
-**TODO: Add description**
+Ticket booking system
 
-## Installation
+Elixir Broadway + RabbitMQ
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `broadway_tickets` to your list of dependencies in `mix.exs`:
+## How to use
 
-```elixir
-def deps do
-  [
-    {:broadway_tickets, "~> 0.1.0"}
-  ]
-end
-```
-
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at <https://hexdocs.pm/broadway_tickets>.
-
+_ADD HOW TO USE_
