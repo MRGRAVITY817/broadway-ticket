@@ -23,7 +23,8 @@ defmodule BroadwayTickets.MixProject do
   defp deps do
     [
       {:broadway, "~> 1.0"},
-      {:broadway_rabbitmq, "~> 0.8"}
+      {:broadway_rabbitmq, "~> 0.8"},
+      {:amqp, "~> 3.3"}
     ]
   end
 end
