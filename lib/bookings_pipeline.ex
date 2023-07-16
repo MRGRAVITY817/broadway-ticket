@@ -12,8 +12,17 @@ defmodule BookingsPipeline do
   def start_link(_args) do
     options = [
       name: BookingsPipeline,
-      producer: [module: {@producer, @producer_config}],
-      processors: [default: []]
+      producer: [
+        module: {@producer, @producer_config}
+        # You can set concurrency options
+        # concurrency: 1
+      ],
+      processors: [
+        default: [
+          # You can set concurrency options
+          # concurrency: System.schedulers_online() * 2
+        ]
+      ]
     ]
 
     Broadway.start_link(__MODULE__, options)
