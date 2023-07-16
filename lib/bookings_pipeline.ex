@@ -32,12 +32,26 @@ defmodule BookingsPipeline do
   def handle_message(_processor, message, _context) do
     %{data: %{event: event, user: user}} = message
 
-    # TODO: check for tickets availability.
+    if BroadwayTickets.tickets_available?(event) do
+      BroadwayTickets.create_ticket(user, event)
+      BroadwayTickets.send_email(user)
+      IO.inspect(message, label: "Message")
+    else
+      Broadway.Message.failed(message, "bookings-closed")
+    end
+  end
 
-    BroadwayTickets.create_ticket(user, event)
-    BroadwayTickets.send_email(user)
+  # Handle when `Broadway.Message.failed()` is called
+  def handle_failed(messages, _context) do
+    IO.inspect(messages, label: "Failed messages")
 
-    IO.inspect(message, label: "Message")
+    Enum.map(messages, fn
+      %{status: {:failed, "bookings-closed"}} = message ->
+        Broadway.Message.configure_ack(message, on_failure: :reject)
+
+      message ->
+        message
+    end)
   end
 
   # Does preparation before handle_message() is being called
