@@ -14,7 +14,7 @@ defmodule BroadwayTickets.MixProject do
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
-      extra_applications: [:lager, :logger],
+      extra_applications: [:logger],
       mod: {BroadwayTickets.Application, []}
     ]
   end
@@ -22,8 +22,8 @@ defmodule BroadwayTickets.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:broadway, "~> 0.6"},
-      {:broadway_rabbitmq, "~> 0.6"}
+      {:broadway, "~> 1.0"},
+      {:broadway_rabbitmq, "~> 0.8"}
     ]
   end
 end
