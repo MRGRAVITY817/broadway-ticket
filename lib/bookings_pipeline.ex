@@ -32,4 +32,26 @@ defmodule BookingsPipeline do
   def handle_message(_processor, message, _context) do
     IO.inspect(message, label: "Message")
   end
+
+  # Does preparation before handle_message() is being called
+  def prepare_messages(messages, _context) do
+    # Parse data and convert to a map.
+    messages =
+      Enum.map(messages, fn message ->
+        Broadway.Message.update_data(message, fn data ->
+          [event, user_id] = String.split(data, ",")
+          %{event: event, user_id: user_id}
+        end)
+      end)
+
+    users = BroadwayTickets.users_by_ids(Enum.map(messages, & &1.data.user_id))
+
+    # Put users in messages
+    Enum.map(messages, fn message ->
+      Broadway.Message.update_data(message, fn data ->
+        user = Enum.find(users, &(&1.id == data.user_id))
+        Map.put(data, :user, user)
+      end)
+    end)
+  end
 end
