@@ -30,6 +30,13 @@ defmodule BookingsPipeline do
 
   # This is handled on new process, created by Broadway.
   def handle_message(_processor, message, _context) do
+    %{data: %{event: event, user: user}} = message
+
+    # TODO: check for tickets availability.
+
+    BroadwayTickets.create_ticket(user, event)
+    BroadwayTickets.send_email(user)
+
     IO.inspect(message, label: "Message")
   end
 
