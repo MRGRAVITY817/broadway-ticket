@@ -1,6 +1,6 @@
 send_messages = fn num_messages -> 
   {:ok, connection} = AMQP.Connection.open()
-  {:ok, channel} = AMQP.Connection.open(connection)
+  {:ok, channel} = AMQP.Channel.open(connection)
 
   Enum.each(1..num_messages, fn _ -> 
     event = Enum.random(["cinema", "musical", "play"])
