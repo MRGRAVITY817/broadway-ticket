@@ -22,23 +22,29 @@ defmodule BookingsPipeline do
           # You can set concurrency options
           # concurrency: System.schedulers_online() * 2
         ]
+      ],
+      batchers: [
+        default: []
       ]
     ]
 
     Broadway.start_link(__MODULE__, options)
   end
 
+  def handle_batch(_batcher, messages, batch_info, _context) do
+    IO.inspect(batch_info, label: "#{inspect(self())} Batch")
+
+    messages
+  end
+
   # This is handled on new process, created by Broadway.
   def handle_message(_processor, message, _context) do
     %{data: %{event: event, user: user}} = message
 
-    if BroadwayTickets.tickets_available?(event) do
-      BroadwayTickets.create_ticket(user, event)
-      BroadwayTickets.send_email(user)
-      IO.inspect(message, label: "Message")
-    else
-      Broadway.Message.failed(message, "bookings-closed")
-    end
+    BroadwayTickets.create_ticket(user, event)
+    BroadwayTickets.send_email(user)
+
+    IO.inspect(message, label: "Message")
   end
 
   # Handle when `Broadway.Message.failed()` is called
