@@ -24,6 +24,8 @@ defmodule BookingsPipeline do
         ]
       ],
       batchers: [
+        cinema: [],
+        musical: [],
         default: []
       ]
     ]
@@ -39,12 +41,20 @@ defmodule BookingsPipeline do
 
   # This is handled on new process, created by Broadway.
   def handle_message(_processor, message, _context) do
-    %{data: %{event: event, user: user}} = message
+    if BroadwayTickets.tickets_available?(message.data.event) do
+      case message do
+        %{data: %{event: "cinema"}} = message ->
+          Broadway.Message.put_batcher(message, :cinema)
 
-    BroadwayTickets.create_ticket(user, event)
-    BroadwayTickets.send_email(user)
+        %{data: %{event: "musical"}} = message ->
+          Broadway.Message.put_batcher(message, :musical)
 
-    IO.inspect(message, label: "Message")
+        message ->
+          message
+      end
+    else
+      Broadway.Message.failed(message, "bookings-closed")
+    end
   end
 
   # Handle when `Broadway.Message.failed()` is called
