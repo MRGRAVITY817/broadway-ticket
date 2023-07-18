@@ -24,4 +24,10 @@ defmodule NotificationsPipeline do
 
     Broadway.start_link(__MODULE__, options)
   end
+
+  def handle_message(_processor, message, _context) do
+    message
+    |> Broadway.Message.put_batcher(:email)
+    |> Broadway.Message.put_batch_key(message.data.recipient)
+  end
 end
