@@ -40,4 +40,12 @@ defmodule NotificationsPipeline do
       end)
     end)
   end
+
+  def handle_batch(_batcher, messages, batch_info, context) do
+    IO.puts("#{inspect(self())} Batch #{batch_info.batcher} #{batch_info.batch_key}")
+
+    # Send an email digest to the user with all info
+
+    messages
+  end
 end
