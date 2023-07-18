@@ -30,4 +30,14 @@ defmodule NotificationsPipeline do
     |> Broadway.Message.put_batcher(:email)
     |> Broadway.Message.put_batch_key(message.data.recipient)
   end
+
+  # Split raw message with comman(,)
+  def prepare_messages(messages, _context) do
+    Enum.map(messages, fn message ->
+      Broadway.Message.update_data(message, fn data ->
+        [type, recipient] = String.split(data, ",")
+        %{type: type, recipient: recipient}
+      end)
+    end)
+  end
 end
