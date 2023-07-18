@@ -34,14 +34,15 @@ defmodule BookingsPipeline do
   end
 
   def handle_batch(_batcher, messages, batch_info, _context) do
-    IO.inspect(batch_info,
-      label: "#{inspect(self())} Batch #{batch_info.batcher} #{batch_info.batch_key}"
-    )
+    IO.puts("#{inspect(self())} Batch #{batch_info.batcher} #{batch_info.batch_key}")
 
     messages
     |> BroadwayTickets.insert_all_tickets()
-    |> Enum.each(fn %{data: %{user: user}} ->
-      BroadwayTickets.send_email(user)
+    |> Enum.each(fn message ->
+      # enqueue notifications back to message broker when done batch processing
+      channel = message.metadata.amqp_channel
+      payload = "email,#{message.data.user.email}"
+      AMQP.Basic.publish(channel, "", "notifications_queue", payload)
     end)
 
     messages
