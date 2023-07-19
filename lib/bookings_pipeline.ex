@@ -6,7 +6,8 @@ defmodule BookingsPipeline do
   @producer_config [
     queue: "bookings_queue",
     declare: [durable: true],
-    on_failure: :reject_and_requeue
+    on_failure: :reject_and_requeue_once,
+    qos: [prefetch_count: 100]
   ]
 
   def start_link(_args) do
@@ -14,19 +15,20 @@ defmodule BookingsPipeline do
       name: BookingsPipeline,
       producer: [
         module: {@producer, @producer_config}
-        # You can set concurrency options
+        ## You can set concurrency options
         # concurrency: 1
       ],
       processors: [
         default: [
-          # You can set concurrency options
+          ## You can set concurrency options here as well
           # concurrency: System.schedulers_online() * 2
         ]
       ],
       batchers: [
-        cinema: [],
+        cinema: [batch_size: 75],
+        # default batch size is 100
         musical: [],
-        default: []
+        default: [batch_size: 50, batch_timeout: 5000]
       ]
     ]
 
